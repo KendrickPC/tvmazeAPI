@@ -14,26 +14,21 @@ const $searchForm = $("#search-form");
 
 async function getShowsByTerm(term) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
-
-
-  return [
-    {
-      id: 1767,
-      name: "The Bletchley Circle",
-      summary:
-        `<p><b>The Bletchley Circle</b> follows the journey of four ordinary 
-           women with extraordinary skills that helped to end World War II.</p>
-         <p>Set in 1952, Susan, Millie, Lucy and Jean have returned to their 
-           normal lives, modestly setting aside the part they played in 
-           producing crucial intelligence, which helped the Allies to victory 
-           and shortened the war. When Susan discovers a hidden code behind an
-           unsolved murder she is met by skepticism from the police. She 
-           quickly realises she can only begin to crack the murders and bring
-           the culprit to justice with her former friends.</p>`,
-      image:
-          "http://static.tvmaze.com/uploads/images/medium_portrait/147/369403.jpg"
+  const response = await axios.get('http://api.tvmaze.com/search/shows?', {
+    params: {
+      q: term,
     }
-  ]
+  })
+  const showData = response.data;
+  const allShows = showData.map(item => {
+    return {
+      id: item.show.id,
+      name: item.show.name,
+      summary: item.show.summary,
+      image: item.show.image === null ? "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png" : item.show.image.medium,
+    }
+  })
+  return allShows;
 }
 
 
@@ -47,7 +42,7 @@ function populateShows(shows) {
         `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg" 
+              src=${show.image} 
               alt="Bletchly Circle San Francisco" 
               class="w-25 mr-3">
            <div class="media-body">
@@ -60,7 +55,6 @@ function populateShows(shows) {
          </div>  
        </div>
       `);
-
     $showsList.append($show);  }
 }
 
@@ -70,7 +64,7 @@ function populateShows(shows) {
  */
 
 async function searchForShowAndDisplay() {
-  const term = $("#searchForm-term").val();
+  const term = $("#search-query").val();
   const shows = await getShowsByTerm(term);
 
   $episodesArea.hide();
