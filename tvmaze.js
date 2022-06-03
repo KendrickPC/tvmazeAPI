@@ -14,7 +14,7 @@ const $episodesList = $("#episodes-list");
 
 async function getShowsByTerm(term) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
-  const response = await axios.get('http://api.tvmaze.com/search/shows?', {
+  const response = await axios.get('https://api.tvmaze.com/search/shows?', {
     params: {
       q: term,
     }
@@ -82,7 +82,7 @@ $searchForm.on("submit", async function (evt) {
  *      { id, name, season, number }
  */
 async function getEpisodesOfShow(id) { 
-  const response = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
+  const response = await axios.get(`https://api.tvmaze.com/shows/${id}/episodes`);
   // const allEpisodes = response.data;
   const allEpisodes = response.data;
   return allEpisodes.map(item => {
