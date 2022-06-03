@@ -3,7 +3,7 @@
 const $showsList = $("#shows-list");
 const $episodesArea = $("#episodes-area");
 const $searchForm = $("#search-form");
-
+const $episodesList = $("#episodes-list");
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -43,13 +43,13 @@ function populateShows(shows) {
          <div class="media">
            <img 
               src=${show.image} 
-              alt="Bletchly Circle San Francisco" 
+              alt=${show.name}
               class="w-25 mr-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
              <div><small>${show.summary}</small></div>
-             <button class="btn btn-outline-light btn-sm Show-getEpisodes">
-               Episodes
+             <button class="btn btn-outline-dark btn-sm Show-getEpisodes">
+               Get Episodes
              </button>
            </div>
          </div>  
@@ -73,6 +73,7 @@ async function searchForShowAndDisplay() {
 
 $searchForm.on("submit", async function (evt) {
   evt.preventDefault();
+  $("#SHOW-getEpisodes").show();
   await searchForShowAndDisplay();
 });
 
@@ -80,9 +81,40 @@ $searchForm.on("submit", async function (evt) {
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
+async function getEpisodesOfShow(id) { 
+  const response = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
+  // const allEpisodes = response.data;
+  const allEpisodes = response.data;
+  return allEpisodes.map(item => {
+    return {
+      id: item.id,
+      name: item.name,
+      season: item.season,
+      number: item.number,
+    }
+  })
 
-// async function getEpisodesOfShow(id) { }
+}
 
 /** Write a clear docstring for this function... */
 
-// function populateEpisodes(episodes) { }
+function populateEpisodes(episodes) { 
+  $("episodes-list").empty();
+  for (let episode of episodes) {
+    let $episode = $(
+    `<li>
+      ${episode.season} - ${episode.number} - ${episode.name}
+    </li>`)
+    $($episodesList).append($episode);
+  }
+
+  $("#episodes-area").show();
+  
+}
+
+
+// I can't get the episodes button click to bind to the parent element. I've tried 
+// to bind to .media-body .media .Show and #showsList (from below)... Can you help me here?
+$(".Show-getEpisodes").on('click', '#shows-list', async function(evt) {
+  console.log("CLICKED")
+})
