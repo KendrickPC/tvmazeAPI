@@ -99,11 +99,11 @@ async function getEpisodesOfShow(id) {
 /** Write a clear docstring for this function... */
 
 function populateEpisodes(episodes) { 
-  $("episodes-list").empty();
+  $("#episodes-list").empty();
   for (let episode of episodes) {
     let $episode = $(
     `<li>
-      ${episode.season} - ${episode.number} - ${episode.name}
+      Season: ${episode.season} - Episode#: ${episode.number} - Episode Name: ${episode.name}
     </li>`)
     $($episodesList).append($episode);
   }
@@ -112,9 +112,10 @@ function populateEpisodes(episodes) {
   
 }
 
-
-// I can't get the episodes button click to bind to the parent element. I've tried 
-// to bind to .media-body .media .Show and #showsList (from below)... Can you help me here?
-$(".Show-getEpisodes").on('click', '#shows-list', async function(evt) {
-  console.log("CLICKED")
+$("#shows-list").on("click", ".Show-getEpisodes", async function(evt) {
+  // Get Show ID:
+  // const showId = 
+  const showId = ($(evt.target).closest(".Show")[0].dataset.showId);
+  const episodes = await getEpisodesOfShow(showId);
+  populateEpisodes(episodes);
 })
